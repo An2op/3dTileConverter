@@ -11,8 +11,9 @@ class Slicer(Element):
         self.__extras = [[] for _ in range(len(self.meshes))]
         root = self.scenes[self.scene].nodes[0]
         self.__parse_node(root)
-        for image in self.images:
-            image.uri = image.uri.replace("\\", "/")
+        if self.images:
+            for image in self.images:
+                image.uri = image.uri.replace("\\", "/")
 
     def __parse_node(self, node_index, *, matrix=Matrix4(), extras=None):
         node = self.nodes[node_index]
@@ -52,10 +53,16 @@ class Slicer(Element):
                    buffer_views=self.__get_buffer_views(buffer_view_indices), materials=self.__get_materials(material_indices, image_indices), textures=self.__get_textures(len(image_indices)), images=self.__get_images(image_indices))
 
     def __get_images(self, image_indices):
-        return [self.images[id] for id in image_indices]
+        if(self.images): 
+            return [self.images[id] for id in image_indices]
+        else:
+            return []    
 
     def __get_textures(self, count):
-        return self.textures[:count]
+        if(self.images): 
+            return self.textures[:count]
+        else:
+            return []     
 
     def __get_images_indices(self, material_indices):
         return [self.materials[id].pbr_metallic_roughness.base_color_texture.index for id in material_indices if
